@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>Lifta, din guide till en tryggare resa!</title>
+
+<link href="css/south-street/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+<link href="css/lifta.css" rel="stylesheet">
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/jquery-ui-1.10.3.custom.js"></script>
+
+<style>
+	html {height:100%}
+	body {height:100%}
+</style>
+
+<script>
+//FACEBOOK STUFF------------------------------------------------------------------------------------------------
+window.fbAsyncInit = function()
+	{
+	  	FB.init(
+	  	{
+			appId      : '642255305789981',
+			status     : true, // check login status
+			cookie     : true, // enable cookies to allow the server to access the session
+			xfbml      : true  // parse XFBML
+	  	});
+	
+	  	// Here we subscribe to the auth.authResponseChange JavaScript event. This event is fired
+	  	// for any authentication related change, such as login, logout or session refresh. This means that
+	  	// whenever someone who was previously logged out tries to log in again, the correct case below 
+	  	// will be handled. 
+	  	FB.Event.subscribe('auth.authResponseChange', function(response) 
+		{
+			// Here we specify what we do with the response anytime this event occurs. 
+			if (response.status === 'connected') 
+			{
+		  		// The response object is returned with a status field that lets the app know the current
+		  		// login status of the person. In this case, we're handling the situation where they 
+		  		// have logged in to the app.
+		  		testAPI();
+				getUserInfo();
+			} 
+			else if (response.status === 'not_authorized') 
+			{
+		  		// In this case, the person is logged into Facebook, but not into the app
+			} 
+			else 
+			{
+		  		// In this case, the person is not logged into Facebook
+			}
+	  	});
+	};
+	
+// Load the SDK asynchronously
+(function(d)
+{
+	var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+	if (d.getElementById(id)) {return;}
+	js = d.createElement('script'); js.id = id; js.async = true;
+	js.src = "//connect.facebook.net/en_US/all.js";
+	ref.parentNode.insertBefore(js, ref);
+}(document));
+	
+// Here we run a very simple test of the Graph API after login is successful. 
+// This testAPI() function is only called in those cases. 
+function testAPI() 
+{
+	console.log('Welcome!  Fetching your information.... ');
+	FB.api('/me', function(response) 
+	{
+		console.log('Good to see you, ' + response.name + '.');
+	});	
+}
+
+function Picture()
+{
+	FB.api('/me', function(response) {
+			var $id = response.id;
+			$("#picture").attr("src", "https://graph.facebook.com/" + $id + "/picture?width=100&height=150");
+	});
+}
+/*function FBbutton()
+{
+	var $newhtml = $('<div id="fblog"><div class="fb-login-button" autologoutlink="true"></div></div>');
+	$( "#user" ).html($newhtml);
+	FB.XFBML.parse($newhtml[0]);
+}*/
+
+//AJAX stuff -------------------------------------------------------------------------------------------------------
+function getUserInfo()
+{
+	console.log("making ajax call!");
+	$.ajax(
+	{
+  		url: "/Lifta/userinfo",
+		dataType: "json",
+  		success: function(resp)
+		{
+			console.log("ajax callback!");
+			if (resp != "fail")
+			{
+				console.log("Ajax response:");
+				console.log(resp);
+				displayUserInfo(resp);
+			}
+		}
+	});
+}
+	  
+//JQuery stuff ----------------------------------------------------------------------------------------------------- 
+$(function() 
+{ 	
+	$( "#accordion" ).accordion({
+		collapsible: true,
+		heightStyle: "content"
+		});
+		
+	$( "#menu" ).buttonset();	
+    //$( "#selectable" ).selectable();
+});
+
+function displayUserInfo(userInfo)
+{
+	Picture();	
+	$( "#userinfo" ).html('<div>Logged in as: ' + userInfo.fname + ' ' + userInfo.lname + '<br /> Rating: ' + userInfo.rating + '</div>');
+}
+//Google MAPS stuff--------------------------------------------------------------------------------------------------
+var geocoder;
+var map;
+function initialize() {
+	geocoder = new google.maps.Geocoder();
+  	var mapOptions = {
+    	zoom: 8,
+    	center: new google.maps.LatLng(-34.397, 150.644)
+  	};
+
+  map = new google.maps.Map(document.getElementById('map-canvas'),
+      mapOptions);
+	  
+	  codeAddress();
+	  //$( "#accordion" ).accordion("refresh");
+}
+
+function loadScript() {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&' +
+      'callback=initialize';
+  document.body.appendChild(script);
+}
+
+function codeAddress() {
+  var address = "östersund";
+  geocoder.geocode( { 'address': address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+      map.setCenter(results[0].geometry.location);
+      var marker = new google.maps.Marker({
+          map: map,
+          position: results[0].geometry.location
+      });
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
+  });
+}
+
+window.onload = loadScript;
+</script>
+
+</head>
+
+<body>
+    <div id="fb-root"></div>
+	<div id="banner">
+		<img src="images/lifta.png" width="960px"/>
+	</div>
+
+	<div id="menu">
+    	<input type="radio" id="radio1" name="radio"><label for="radio1">Prutt</label>
+    	<input type="radio" id="radio2" name="radio"><label for="radio2">Sök Resa</label>
+		<input type="radio" id="radio3" name="radio"><label for="radio3">Ny Resa</label>
+		<input type="radio" id="radio4" name="radio"><label for="radio4">FAQ</label>
+	</div>
+
+	<div id="user-bar" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-all ui-widget">
+		<img id="picture"  width="100" />
+    	<div id="userinfo"> </div>
+		<div class="fb-login-button" autologoutlink="true"></div>
+	</div>
+
+	<div id="content">
+    	<div id="accordion">
+        	<h3> Östersund - Ljusdal </h3>
+        	<div> Avgång: 12.00 <br />
+              	Framme: 17.00
+                <div id="map-canvas" style="width: 300px; height: 300px"></div>
+        	</div>
+        
+        	<h3> Stockholm - Ljusdal </h3>
+        	<div> Avgång: 10.00 <br />
+          	    Framme: 14.00
+       	 	</div>
+    	</div>
+	</div>
+
+</body>
+</html>

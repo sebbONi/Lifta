@@ -1,0 +1,66 @@
+@charset "utf-8";
+/* CSS Document */
+
+#banner
+{
+	width:960px;
+	margin:0 auto;
+}
+
+#user-bar
+{
+	width:950px;
+	margin:0 auto;
+	padding: 5px;
+	
+	margin-top: 0px;
+	margin-bottom: 20px;
+}
+
+#picture
+{
+	width:100px;
+	display:inline-block;
+}
+
+#userinfo
+{
+	width:600px;
+	display:inline-block;
+	font-size:12px;
+	vertical-align:top;
+	padding-left:100px;
+}
+
+.fb-login-button
+{
+	width:100px;
+	display:inline-block;
+	vertical-align:top;
+}
+
+#menu
+{
+	width:960px;
+	margin:0 auto;
+	
+	margin-top: 0px;
+	margin-bottom: 10px;
+}
+
+#menu .ui-button
+{
+	width: 25%;
+}s
+  
+#feedback { font-size: 1.4em; }
+#selectable .ui-selecting { background: #FECA40; }
+#selectable .ui-selected { background: #F39814; color: white; }
+#selectable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+#selectable li { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
+  
+#content
+{
+	width:960px;
+	margin:0 auto;
+}
